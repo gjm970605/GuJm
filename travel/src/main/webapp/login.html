@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>课工场旅游网-登录</title>  
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+      <!--导入angularJS文件-->
+<!--    <script src="js/angular.min.js"></script>-->
+	<!--导入jquery-->
+	<script src="js/jquery-3.3.1.js"></script>
+
+	<script>
+		$(function () {
+			//验证码校验
+			function checkCheck() {
+				let check = $("#check")
+				let isChecked = false;
+				$.ajax({
+					url:"check/check",
+					type:"post",
+					data:{code:check.val()},
+					success:function (data) {
+						if (data.flag){
+							check.css("border","1px solid green")
+							$("#errorMsg").html(data.errorMsg)
+							isChecked = true;
+						}else {
+							check.css("border","1px solid red")
+							$("#errorMsg").html(data.errorMsg)
+							isChecked = false;
+						}
+					},
+					dataType:"json",
+					async: false
+				})
+				return isChecked;
+			}
+			$("#check").blur(checkCheck)
+
+			//点击登录按钮提交表单
+			$("#login_btn").click(function () {
+				if (checkCheck()){
+					$.ajax({
+						url:"user/login",
+						type:"post",
+						data:$("#loginForm").serialize(),
+						success:function (data) {
+							if (data.flag){
+								//登录成功，跳转首页
+								location.href = "index.html";
+							}else {
+								//登陆失败，展示失败错误原因
+								$("#errorMsg").html(data.errorMsg)
+								//刷新验证码
+								$("#checkImg").prop("src","check/code?"+new Date().getTime())
+							}
+						},
+						dataType:"json",
+						async:false
+					})
+					// $.post("loginServlet",$(this).serialize(),function (data) {
+					// 	if (data.flag){
+					// 		//登录成功，跳转首页
+					// 		location.href = "index.html";
+					// 	}else {
+					// 		//登陆失败，展示失败错误原因
+					// 		$("#errorMsg").html(data.errorMsg)
+					// 		//刷新验证码
+					// 		$("#checkImg").prop("src","checkCode?"+new Date().getTime())
+					// 	}
+					// },"json")
+				}
+			})
+
+			//表单提交事件，发送ajax
+			// $("#loginForm").submit(function () {
+			// 	$.ajax({
+			// 		url:"loginServlet",
+			// 		type:"post",
+			// 		data:$(this).serialize(),
+			// 		success:function (data) {
+			// 			if (data.flag){
+			// 				//登录成功，跳转首页
+			// 				location.href = "index.html";
+			// 			}else {
+			// 				//登陆失败，展示失败错误原因
+			// 				$("#errorMsg").html(data.errorMsg)
+			// 				//刷新验证码
+			// 				$("#checkImg").prop("src","checkCode?"+new Date().getTime())
+			// 			}
+			// 		},
+			// 		dataType:"json",
+			// 		async:false
+			// 	})
+			// })
+
+		})
+	</script>
+</head>
+
+<body>
+<!--引入头部-->
+<div id="header"></div>
+    <!-- 头部 end -->
+    <section id="login_wrap">
+        <div class="fullscreen-bg" style="background: url(images/login_bg.png);height: 532px;">
+        	
+        </div>
+        <div class="login-box">
+        	<div class="title">
+        		
+        		<span>欢迎登录课工场旅游账户</span>
+        	</div>
+        	<div class="login_inner">
+				
+				<!--登录错误提示消息-->
+        		<div id="errorMsg" class="alert alert-danger" ></div>
+				<form id="loginForm" action="" method="post" accept-charset="utf-8">
+        			<input type="hidden" name="action" value="login"/>
+					<input name="username" type="text" placeholder="请输入账号" autocomplete="off">
+        			<input name="password" type="text" placeholder="请输入密码" autocomplete="off">
+        			<div class="verify">
+					<input id="check" name="check" type="text" placeholder="请输入验证码" autocomplete="off">
+					<span><img id="checkImg" src="check/code" alt="" onclick="changeCheckCode(this)"></span>
+					<script type="text/javascript">
+						//图片点击事件
+						function changeCheckCode(img) {
+							img.src="check/code?"+new Date().getTime();
+						}
+					</script>
+			</div>
+			<div class="submit_btn">
+        				<button type="button" id="login_btn">登录</button>
+        				<div class="auto_login">
+        					<input type="checkbox" name="auto_login" class="checkbox">
+        					<span>自动登录</span>
+        				</div>        				
+        			</div>        			       		
+        		</form>
+        		<div class="reg">没有账户？<a href="register.html">立即注册</a></div>
+        	</div>
+        </div>
+    </section>
+    <!--引入尾部-->
+    <div id="footer"></div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <!--导入布局js，共享header和footer-->
+    <script type="text/javascript" src="js/include.js"></script>
+</body>
+
+</html>
